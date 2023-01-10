@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:12.4
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=vantage6
+    restart: unless-stopped
+  vantage6:
+    image: ghcr.io/mdw-nl/vantage6_server_azure:petronas
+    ports:
+      - 80:80
+    environment:
+      - "V6_DESCRIPTION=ARGOS project"
+      - "V6_SECRET_KEY=j0hanSecretArg0s"
+      - "V6_URI=postgresql://postgres:postgres@postgres/vantage6"
+      - "V6_ALLOW_DROP_ALL=true"
