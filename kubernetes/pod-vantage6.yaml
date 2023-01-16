@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vantage6-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opal
+  template:
+    metadata:
+      labels:
+        app: opal
+    spec:
+      serviceAccountName: anyuid
+      containers:
+        - name: vantage6-server
+          image: ghcr.io/mdw-nl/vantage6_server_azure:petronas
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+            - containerPort: 80
+          env:
+            - name: V6_DESCRIPTION
+              value: "R-DAISES project"
+            - name: V6_SECRET_KEY
+              value: "j0hanSecretRD@!SES"
+            - name: V6_URI
+              value: "postgresql://postgres:postgres@postgres-service/vantage6"
+            - name: V6_ALLOW_DROP_ALL
+              value: "true"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: vantage6-service
+spec:
+  selector:
+    app: opal
+  type: LoadBalancer # or load balancer?
+  ports:
+    - port: 80
+      targetPort: 80
+      name: vantage6-api

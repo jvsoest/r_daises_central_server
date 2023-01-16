@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vantage6-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opal
+  template:
+    metadata:
+      labels:
+        app: opal
+    spec:
+      serviceAccountName: anyuid
+      containers:
+        - name: vantage6-ui
+          image: harbor2.vantage6.ai/infrastructure/ui
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+            - containerPort: 80
+          env:
+            - name: SERVER_URL
+              value: "https://vantage6-service-r-daises.apps.dsri2.unimaas.nl"
+            - name: API_PATH
+              value: "/api"          
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: vantage6-ui
+spec:
+  selector:
+    app: opal
+  type: LoadBalancer # or load balancer?
+  ports:
+    - port: 80
+      targetPort: 80
+      name: vantage6-ui
